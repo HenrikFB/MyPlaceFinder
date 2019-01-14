@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+
 public class SceneController : MonoBehaviour
 {
 
@@ -17,6 +18,7 @@ public class SceneController : MonoBehaviour
     public void askGoogle(string PassedKeyword)
     {
         keyword = PassedKeyword;
+        //StartCoroutine(makeURLRequest());
     }
 
     public void changeScene(string scene) {
@@ -27,4 +29,7 @@ public class SceneController : MonoBehaviour
     {
         Application.Quit();
     }
+
+   
+
 }
