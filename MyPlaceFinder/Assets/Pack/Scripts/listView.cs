@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
+using UnityEngine.UI;
 
 public class listView : MonoBehaviour
 {
@@ -74,6 +75,8 @@ public class listView : MonoBehaviour
                     GameObject contentHolder = GameObject.FindGameObjectWithTag("Content");
 
                     thePrefab.transform.parent = contentHolder.transform;
+                    Text[] theText = thePrefab.GetComponentsInChildren<Text>();
+                    theText[0].text = thePlaces.results[i].name;
                 }
             }
         }
