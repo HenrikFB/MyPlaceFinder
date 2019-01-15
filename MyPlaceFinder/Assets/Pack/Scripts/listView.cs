@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
 using UnityEngine.UI;
+using System;
 
 public class listView : MonoBehaviour
 {
@@ -71,12 +72,17 @@ public class listView : MonoBehaviour
                 for (int i = 0; i < thePlaces.results.Count; i++)
                 {
                     GameObject thePrefab = Instantiate(Resources.Load("ButtonPrefabs/" + prefabName)) as GameObject;
-                    Debug.Log("prefab names: " + thePrefab );
+                    //Debug.Log("prefab names: " + thePrefab );
                     GameObject contentHolder = GameObject.FindGameObjectWithTag("Content");
 
                     thePrefab.transform.parent = contentHolder.transform;
                     Text[] theText = thePrefab.GetComponentsInChildren<Text>();
                     theText[0].text = thePlaces.results[i].name;
+
+                    Debug.Log(theText[0].text+": "+ Math.Round(GeoCodeCalc.CalcDistance(41.648408, 2.739420, thePlaces.results[i].geometry.location.lat, thePlaces.results[i].geometry.location.lng, GeoCodeCalcMeasurement.Metre), 2));
+                    double distance = Math.Round(GeoCodeCalc.CalcDistance(GPS.latitude, GPS.longitude, thePlaces.results[i].geometry.location.lat, thePlaces.results[i].geometry.location.lng, GeoCodeCalcMeasurement.Metre), 2);
+
+                    theText[1].text = "Distance : " + distance.ToString() + "m";
                 }
             }
         }
