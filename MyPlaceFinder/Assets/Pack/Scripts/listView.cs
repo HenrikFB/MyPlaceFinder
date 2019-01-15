@@ -5,6 +5,11 @@ using Newtonsoft.Json;
 
 public class listView : MonoBehaviour
 {
+
+
+    private string prefabName = "listPrefab";
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -34,12 +39,44 @@ public class listView : MonoBehaviour
 
 
     void createList(string jsonString) {
-        RootObject thePlaces = new RootObject();
-        Newtonsoft.Json.JsonConvert.PopulateObject(jsonString, thePlaces);
-        Debug.Log(thePlaces.results[0].name);
-        Debug.Log(thePlaces.results[0].vicinity);
-        Debug.Log(thePlaces.results[0].geometry.location.lat);
-        Debug.Log(thePlaces.results[0].geometry.location.lng);
+
+        if (jsonString != null)
+        {
+            RootObject thePlaces = new RootObject();
+            Newtonsoft.Json.JsonConvert.PopulateObject(jsonString, thePlaces);
+ 
+            if (thePlaces.results.Count != null) {
+
+                string theWord = SceneController.keyword;
+
+                switch (theWord)
+                {
+                    case "point_of_interest":
+                        prefabName = "listPrefab";
+                        break;
+                    case "food":
+                        prefabName = "listPrefabFood";
+                        break;
+                    case "hotel":
+                        prefabName = "listPrefabHotel";
+                        break;
+                    case "park":
+                        prefabName = "listPrefabPark";
+                        break;
+                    default:
+                        break;
+                }
+
+                for (int i = 0; i < thePlaces.results.Count; i++)
+                {
+                    GameObject thePrefab = Instantiate(Resources.Load("ButtonPrefabs/" + prefabName)) as GameObject;
+                    Debug.Log("prefab names: " + thePrefab );
+                    GameObject contentHolder = GameObject.FindGameObjectWithTag("Content");
+
+                    thePrefab.transform.parent = contentHolder.transform;
+                }
+            }
+        }
     }
 } //END OF THE CLASS:
 
