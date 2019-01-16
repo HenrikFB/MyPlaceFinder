@@ -79,14 +79,29 @@ public class listView : MonoBehaviour
                     Text[] theText = thePrefab.GetComponentsInChildren<Text>();
                     theText[0].text = thePlaces.results[i].name;
 
-                    Debug.Log(theText[0].text+": "+ Math.Round(GeoCodeCalc.CalcDistance(41.648408, 2.739420, thePlaces.results[i].geometry.location.lat, thePlaces.results[i].geometry.location.lng, GeoCodeCalcMeasurement.Metre), 2));
-                    double distance = Math.Round(GeoCodeCalc.CalcDistance(GPS.latitude, GPS.longitude, thePlaces.results[i].geometry.location.lat, thePlaces.results[i].geometry.location.lng, GeoCodeCalcMeasurement.Metre), 2);
+                    //Debug.Log(theText[0].text+": "+ Math.Round(GeoCodeCalc.CalcDistance(41.648408, 2.739420, thePlaces.results[i].geometry.location.lat, thePlaces.results[i].geometry.location.lng, GeoCodeCalcMeasurement.Metre), 2));
+                    double distance = Math.Round(GeoCodeCalc.CalcDistance(GPS.latitude, GPS.longitude, thePlaces.results[i].geometry.location.lat, thePlaces.results[i].geometry.location.lng, GeoCodeCalcMeasurement.Kilometers), 2);
 
-                    theText[1].text = "Distance : " + distance.ToString() + "m";
+                    theText[1].text = "Distance : " + distance.ToString() + "km";
+                    Debug.Log("Distance: " + theText[1].text);
+
+                    Button button = thePrefab.GetComponentInChildren<Button>();
+                    button.name = i.ToString();
+                    //target lat and lng
+                    double tLat = thePlaces.results[i].geometry.location.lat; 
+                    double tLon = thePlaces.results[i].geometry.location.lng;
+
+                    string url = "https://www.google.com/maps/dir/"+GPS.latitude+","+GPS.longitude+"/"+tLat+","+tLon+"/@"+GPS.latitude+","+GPS.longitude+",17z/data=!4m2!4m1!3e0";
+                    AddListener(button, url);
                 }
             }
         }
     }
+
+    void AddListener(Button b, string url) {
+        b.onClick.AddListener(() => Application.OpenURL(url));
+    }
+
 } //END OF THE CLASS:
 
 
