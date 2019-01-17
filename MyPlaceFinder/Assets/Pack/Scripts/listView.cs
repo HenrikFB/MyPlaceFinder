@@ -4,19 +4,22 @@ using UnityEngine;
 using Newtonsoft.Json;
 using UnityEngine.UI;
 using System;
+using System.Linq;
 
 public class listView : MonoBehaviour
 {
 
 
     private string prefabName = "listPrefab";
-
+    public List<Item> items = new List<Item>();
+    GameObject contentHolder;
 
     // Start is called before the first frame update
     void Start()
     {
         if (SceneController.keyword != null) {
             StartCoroutine(makeURLRequest());
+            contentHolder = GameObject.FindGameObjectWithTag("Content");
         }
     }
 
@@ -73,7 +76,6 @@ public class listView : MonoBehaviour
                 {
                     GameObject thePrefab = Instantiate(Resources.Load("ButtonPrefabs/" + prefabName)) as GameObject;
                     //Debug.Log("prefab names: " + thePrefab );
-                    GameObject contentHolder = GameObject.FindGameObjectWithTag("Content");
 
                     thePrefab.transform.parent = contentHolder.transform;
                     Text[] theText = thePrefab.GetComponentsInChildren<Text>();
@@ -83,7 +85,7 @@ public class listView : MonoBehaviour
                     double distance = Math.Round(GeoCodeCalc.CalcDistance(GPS.latitude, GPS.longitude, thePlaces.results[i].geometry.location.lat, thePlaces.results[i].geometry.location.lng, GeoCodeCalcMeasurement.Kilometers), 2);
 
                     theText[1].text = "Distance : " + distance.ToString() + "km";
-                    Debug.Log("Distance: " + theText[1].text);
+                   // Debug.Log("Distance: " + theText[1].text);
 
                     Button button = thePrefab.GetComponentInChildren<Button>();
                     button.name = i.ToString();
@@ -93,16 +95,67 @@ public class listView : MonoBehaviour
 
                     string url = "https://www.google.com/maps/dir/"+GPS.latitude+","+GPS.longitude+"/"+tLat+","+tLon+"/@"+GPS.latitude+","+GPS.longitude+",17z/data=!4m2!4m1!3e0";
                     AddListener(button, url);
+
+                    thePrefab.transform.localScale = new Vector3(1, 1, 1);
+                    items.Add(new Item(prefabName, thePlaces.results[i].name, distance, url));
                 }
+                //Debug.Log(items.Count);
+                //RePopulate(items);
+                orderByDistance(items);
             }
         }
+    }
+
+
+    void orderByDistance(List<Item> itemsPassed) {
+        itemsPassed = itemsPassed.OrderBy(a => a.TheDistance).ToList();
+        RePopulate(itemsPassed);
     }
 
     void AddListener(Button b, string url) {
         b.onClick.AddListener(() => Application.OpenURL(url));
     }
 
+    void RePopulate(List<Item> itemsPassed) {
+        foreach (Transform child in contentHolder.transform)
+        {
+            //Debug.Log("Killing : " + child.gameObject.name);
+            Destroy(child.gameObject);
+        }
+
+
+        for (int i = 0; i < itemsPassed.Count; i++)
+        {
+            GameObject thePrefab = Instantiate(Resources.Load("ButtonPrefabs/" + itemsPassed[i].PName)) as GameObject;
+            thePrefab.transform.parent = contentHolder.transform;
+            Text[] theText = thePrefab.GetComponentsInChildren<Text>();
+            theText[0].text = itemsPassed[i].TheTitle;
+            theText[1].text = "Distance: " + itemsPassed[i].TheDistance.ToString() + "km";
+            Button button = thePrefab.GetComponentInChildren<Button>();
+            button.name = i.ToString();
+            AddListener(button, itemsPassed[i].TheURL);
+        }
+
+    }
+
 } //END OF THE CLASS:
+
+
+public class Item
+{
+    public string PName;
+    public string TheTitle;
+    public double TheDistance;
+    public string TheURL;
+
+    public Item(string pname, string thetitle, double thedistance, string theurl) {
+        PName = pname;
+        TheTitle = thetitle;
+        TheDistance = thedistance;
+        TheURL = theurl;
+    }
+}
+
 
 
 public class Location
