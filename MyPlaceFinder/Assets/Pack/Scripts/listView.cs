@@ -32,13 +32,14 @@ public class listView : MonoBehaviour
     IEnumerator makeURLRequest()
     {
 
-        string url = "https://www.buildandrun.tv/GPSCourse/parksJson.json";
-
+        //string url = "https://www.buildandrun.tv/GPSCourse/parksJson.json";
+        string url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=" + GPS.latitude + "," + GPS.longitude + "&radius=500&type=" + SceneController.keyword + "&key=AIzaSyAWhB9guriKgD9mLZhoxbwGAfaX3pbss5c";
         using (WWW www = new WWW(url))
         {
             yield return www;
             //Debug.Log(www.text);
             createList(www.text);
+            //Debug.Log(www.text);
         }
     }
 
@@ -133,6 +134,7 @@ public class listView : MonoBehaviour
             theText[1].text = "Distance: " + itemsPassed[i].TheDistance.ToString() + "km";
             Button button = thePrefab.GetComponentInChildren<Button>();
             button.name = i.ToString();
+            thePrefab.transform.localScale = new Vector3(1,1,1);
             AddListener(button, itemsPassed[i].TheURL);
         }
 
